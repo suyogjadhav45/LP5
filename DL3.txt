@@ -1,0 +1,58 @@
+import pandas as pd
+import numpy as np
+from tensorflow.keras.datasets import fashion_mnist
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense, Flatten, MaxPooling2D, Conv2D
+import matplotlib.pyplot as plt
+
+
+import tensorflow as tf
+(trainX, trainY), (testX, testY) = tf.keras.datasets.fashion_mnist.load_data()
+
+
+
+model = Sequential()
+model.add(Flatten(input_shape=(28,28)))
+model.add(Dense(128,activation = 'relu'))
+model.add(Dense(10,activation = 'softmax'))
+model.compile(optimizer='adam',loss='sparse_categorical_crossentropy',metrics=['accuracy'])
+model.summary()
+
+
+model.fit(trainX.astype(np.float32),trainY.astype(np.float32),epochs=5,validation_split=0.2)
+
+
+import matplotlib.pyplot as plt
+# To know the labels list
+def check_label(id_,labels):
+    label = trainY[id_]
+    if label not in labels:
+        plt.imshow(trainX[id_])
+        print(label)
+        plt.show()
+    return label
+
+
+#To know unqiue Labels 
+labels=[]
+i=0;
+while len(labels)<10:
+    label = check_label(i,labels)
+    if label not in labels:
+        labels.append(label)
+    i+=1
+
+
+def predict(id_):
+    labels = ['t_shirt', 'trouser', 'pullover', 'dress', 'coat', 'sandal', 'shirt', 'sneaker', 'bag', 'ankle_boots'] # Insert After Running Above Code
+    predictions = model.predict(testX[id_:id_+1])
+    label = labels[np.argmax(predictions)]
+    print(label)
+    plt.imshow(test[id_])
+    plt.show()
+
+
+predict(5)
+
+for i in range(10,15):
+    predict(i)

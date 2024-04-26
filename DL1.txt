@@ -1,0 +1,67 @@
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import MinMaxScaler
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.layers import Dense
+
+df=pd.read_csv('1_boston_housing.csv')
+df.head()
+
+df.describe()
+
+df.isnull().sum()
+
+X=df.loc[:,df.columns!='MEDV']
+y=df.loc[:,df.columns=='MEDV']
+X_train,X_test,y_train,y_test=train_test_split(X,y,test_size=0.3,random_state=124)
+
+mms=MinMaxScaler()
+mms.fit(X_train)
+X_train=mms.transform(X_train)
+X_test=mms.transform(X_test)
+
+Model=Sequential()
+Model.add(Dense(128,name='Dense1',activation='relu',input_shape=(13,)))
+Model.add(Dense(64,name='Dense2',activation='relu'))
+Model.add(Dense(1,name='Dense_output',activation='linear'))
+Model.compile(optimizer='adam',loss='mse',metrics=['mae'])
+Model.summary() 
+
+
+history=Model.fit(X_train,y_train,validation_split=0.05,verbose=1,epochs=100)
+
+
+mse_nn,mae_nn=Model.evaluate(X_test,y_test)
+print('Mean square error: ',mse_nn)
+print('Mean absoulte error: ',mae_nn)
+
+
+
+import matplotlib.pyplot as plt
+def plot_loss(history):
+    plt.plot(history.history['loss'], label='Training Loss')
+    plt.plot(history.history['val_loss'], label='Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Loss Over Time')
+    plt.legend()
+    plt.show()
+
+def plot_metric(history, metric):
+    plt.plot(history.history[metric], label='Training ' + metric)
+    plt.plot(history.history['val_' + metric], label='Validation ' + metric)
+    plt.xlabel('Epoch')
+    plt.ylabel(metric)
+    plt.title('Training and Validation ' + metric + ' Over Time')
+    plt.legend()
+    plt.show()
+
+# Assuming you have trained your model and stored the history object
+# history = model.fit(X_train, y_train, validation_split=0.05, epochs=epochs, verbose=verbose)
+
+# Plotting loss over epochs
+plot_loss(history)
+
+# Plotting other metrics like Mean Absolute Error (mae)
+plot_metric(history, 'mae')
