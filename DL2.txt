@@ -72,11 +72,14 @@ regressor.add(Dropout(rate = 0.2))
 ##add output layer
 regressor.add(Dense(units = 1))
 
-
-
 regressor.compile(optimizer = 'adam', loss = 'mean_squared_error')
 
 regressor.fit(x = X_train, y = y_train, batch_size = 32, epochs = 100)
+
+
+
+
+
 
 dataset_test = pd.read_csv('Google_Stock_Price_Test.csv')
 
